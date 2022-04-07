@@ -1,7 +1,7 @@
 import "./App.css";
 import GoogleButton from "react-google-button";
 import React from 'react';
-import Agenda from "./Schedule";
+import ReactAgenda from "../src/components/Calendar/index";
 
 function App() {
 
@@ -15,7 +15,7 @@ function App() {
           console.log("Google button clicked");
         }}
       /> */}
-      <Agenda/>
+      <ReactAgenda/>
     </div>
   );
 }
