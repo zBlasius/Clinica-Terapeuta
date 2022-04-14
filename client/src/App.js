@@ -1,7 +1,6 @@
 import "./App.css";
 import GoogleButton from "react-google-button";
 import React from 'react';
-import ReactAgenda from "../src/components/Calendar/index";
 
 function App() {
 
