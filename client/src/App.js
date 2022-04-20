@@ -1,5 +1,6 @@
 import "./App.css";
 import React from 'react';
+import { ReactAgenda , ReactAgendaCtrl , guid ,  Modal } from 'react-agenda';
 
 function App() {
 
@@ -11,7 +12,7 @@ function App() {
           console.log("Google button clicked");
         }}
       /> */}
-      {/* <ReactAgenda/> */}
+      <ReactAgenda/> 
 
       // TODO Importar index.js dos server dentro do client. Como fazer isso ?
       <script type='module' src='../../server/index.js'></script>
