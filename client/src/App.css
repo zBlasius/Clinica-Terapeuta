@@ -1,4 +1,7 @@
- .App {
+@import "~react-agenda/build/styles.css";
+@import "~react-datetime/css/react-datetime.css";
+
+.App {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
