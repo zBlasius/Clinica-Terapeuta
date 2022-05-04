@@ -1,10 +1,12 @@
 import "./App.css";
-import React from 'react';
-import { ReactAgenda , ReactAgendaCtrl , guid ,  Modal } from 'react-agenda';
+import React, { useEffect } from 'react';
 
+const { getFirestore, collection, getDocs } = require('firebase/firestore/lite');
 const { initializeApp } = require('firebase/app');
 const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = require('firebase/auth');
 const provider = new GoogleAuthProvider();
+
+// TODO isolar código de autenticação em uma outra pasta, e apenas importar dentro deste aquivo (app.js)
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyCB4tJiWBcHOdsmE2pzbm80xfd1zCNv8Dc",
@@ -41,24 +43,27 @@ getRedirectResult(auth)
     const credential = GoogleAuthProvider.credentialFromError(error);
   });
 
+  const db = getFirestore(firebaseApp);
+
 function App() {
+
+  useEffect(()=>{
+    getCities(db)
+  },[])
+
+  // Get a list of cities from your database
+  async function getCities(db) {
+    console.log("teste ____")
+    const citiesCol = collection(db, 'agendamentos');
+    const citySnapshot = await getDocs(citiesCol);
+    const cityList = citySnapshot.docs.map(doc => doc.data());
+    console.log("cityList", cityList)
+    return cityList;
+  }
 
   return (
     <div className="App">
-<<<<<<< Updated upstream
-      {/* <GoogleButton
-        type={"light"}
-        onClick={() => {
-          console.log("Google button clicked");
-        }}
-      /> */}
-      <ReactAgenda/> 
-
-      // TODO Importar index.js dos server dentro do client. Como fazer isso ?
-      <script type='module' src='../../server/index.js'></script>
-=======
       <span> teste </span>
->>>>>>> Stashed changes
     </div>
   );
 }
