@@ -1,6 +1,7 @@
 import React from 'react';
 import { ReactAgenda , ReactAgendaCtrl , guid ,  Modal } from 'react-agenda';
 import { Button } from "@react-md/button";
+import ModalB from "./Modal"
  
 require('moment/locale/pt-br.js'); // this is important for traduction purpose
  
@@ -49,7 +50,8 @@ export default class Agenda extends React.Component {
       locale:"pt-br",
       rowsPerHour:2,
       numberOfDays:4,
-      startDate: new Date()
+      startDate: new Date(),
+      open:false
     }
     this.handleCellSelection = this.handleCellSelection.bind(this)
     this.handleItemEdit = this.handleItemEdit.bind(this)
@@ -61,6 +63,7 @@ handleCellSelection(item){
 }
 handleItemEdit(item){
   console.log('handleItemEdit', item)
+  this.setState({open:true})
 }
 handleRangeSelection(item){
   console.log('handleRangeSelection', item)
@@ -68,6 +71,7 @@ handleRangeSelection(item){
   render() {
     return (
       <div>
+        <ModalB isOpen={this.state.open}/>
         <Button id="text-button-1" theme="primary">
         Text Button 1
       </Button>
