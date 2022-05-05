@@ -1,12 +1,13 @@
 import "./App.css";
 import React, { useEffect } from 'react';
+import api from './api/api'
 
 const { getFirestore, collection, getDocs } = require('firebase/firestore/lite');
 const { initializeApp } = require('firebase/app');
 const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = require('firebase/auth');
 const provider = new GoogleAuthProvider();
 
-// TODO isolar código de autenticação em uma outra pasta, e apenas importar dentro deste aquivo (app.js)
+
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyCB4tJiWBcHOdsmE2pzbm80xfd1zCNv8Dc",
@@ -18,8 +19,8 @@ const firebaseApp = initializeApp({
   appId: "1:77685519438:web:6a47db9f8088883451ff1f",
   measurementId: "G-40HP4GZ066"
 })
-
 const auth = getAuth(firebaseApp);
+
 
 onAuthStateChanged(auth, user => {
   if (user != null) {
@@ -29,37 +30,13 @@ onAuthStateChanged(auth, user => {
   }
 })
 
-getRedirectResult(auth)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access Google APIs.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    const user = result.user;
-  }).catch((error) => {
-
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    const email = error.email;
-    const credential = GoogleAuthProvider.credentialFromError(error);
-  });
-
-  const db = getFirestore(firebaseApp);
-
 function App() {
 
-  useEffect(()=>{
-    getCities(db)
-  },[])
-
-  // Get a list of cities from your database
-  async function getCities(db) {
-    console.log("teste ____")
-    const citiesCol = collection(db, 'agendamentos');
-    const citySnapshot = await getDocs(citiesCol);
-    const cityList = citySnapshot.docs.map(doc => doc.data());
-    console.log("cityList", cityList)
-    return cityList;
-  }
+  useEffect(() => {
+    api.get('get', {data:'blasius'}).then(res=>{
+      console.log("teste res", res.data)
+    })
+  }, [])
 
   return (
     <div className="App">
