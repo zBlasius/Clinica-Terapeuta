@@ -10,9 +10,10 @@ import {
   Modal,
 } from "react-agenda";
 
-const now = new Date();
-
 require("moment/locale/pt-br.js");
+
+//FIXME: Apagar
+const now = new Date();
 const colors = {
   "color-1": "rgba(102, 195, 131 , 1)",
   "color-2": "rgba(242, 177, 52, 1)",
@@ -20,46 +21,7 @@ const colors = {
   "color-4": "rgba(70, 159, 213, 1)",
   "color-5": "rgba(170, 59, 123, 1)",
 };
-
 const items = [
-  {
-    _id: guid(),
-    name: "Meeting , dev staff!",
-    startDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      10,
-      0
-    ),
-    endDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      12,
-      0
-    ),
-    classes: "color-1 color-4",
-  },
-  {
-    _id: guid(),
-    name: "Working lunch , Holly",
-    startDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
-      11,
-      0
-    ),
-    endDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
-      13,
-      0
-    ),
-    classes: "color-2",
-  },
   {
     _id: guid(),
     name: "Conference , plaza",
@@ -241,59 +203,43 @@ export default class Agenda extends Component {
   }
 
   render() {
-    var AgendaItem = function (props) {
-      console.log(" item component props", props);
-      return (
-        <div
-          style={{ display: "block", position: "absolute", background: "#FFF" }}
-        >
-          {props.item.name}{" "}
-          <button onClick={() => props.edit(props.item)}>Edit </button>
-        </div>
-      );
-    };
     return (
       <div className="content-expanded ">
         <div className="control-buttons">
-          <button className="button-control" onClick={this.zoomIn}>
-            {" "}
-            <i className="zoom-plus-icon"></i>{" "}
+          <button 
+            className="button-control"
+            onClick={this._openModal}
+          >
+            {/* TODO: Botão de agendar  */}
+            <i className="schedule-icon"></i>
           </button>
-          <button className="button-control" onClick={this.zoomOut}>
-            {" "}
-            <i className="zoom-minus-icon"></i>{" "}
-          </button>
-          <button className="button-control" onClick={this._openModal}>
-            {" "}
-            <i className="schedule-icon"></i>{" "}
-          </button>
+
           <button
             className="button-control"
             onClick={this.changeView.bind(null, 7)}
           >
-            {" "}
-            {moment.duration(7, "days").humanize()}{" "}
+            {moment.duration(7, "days").humanize()}
           </button>
+
           <button
             className="button-control"
             onClick={this.changeView.bind(null, 4)}
           >
-            {" "}
-            {moment.duration(4, "days").humanize()}{" "}
+            {moment.duration(4, "days").humanize()}
           </button>
+
           <button
             className="button-control"
             onClick={this.changeView.bind(null, 3)}
           >
-            {" "}
-            {moment.duration(3, "days").humanize()}{" "}
+            {moment.duration(3, "days").humanize()}
           </button>
+
           <button
             className="button-control"
             onClick={this.changeView.bind(null, 1)}
           >
-            {" "}
-            {moment.duration(1, "day").humanize()}{" "}
+            {moment.duration(1, "day").humanize()}
           </button>
         </div>
 
@@ -311,7 +257,6 @@ export default class Agenda extends Component {
           rowsPerHour={this.state.rowsPerHour}
           itemColors={colors}
           helper={true}
-          //itemComponent={AgendaItem}
           view="calendar"
           autoScale={false}
           fixedHeader={true}
@@ -323,7 +268,8 @@ export default class Agenda extends Component {
           onItemRemove={this.removeEvent.bind(this)}
           onDateRangeChange={this.handleDateRangeChange.bind(this)}
         />
-        {this.state.showModal ? (
+        
+        {this.state.showModal && (
           <Modal clickOutside={this._closeModal}>
             <div className="modal-content">
               <ReactAgendaCtrl
@@ -335,8 +281,6 @@ export default class Agenda extends Component {
               />
             </div>
           </Modal>
-        ) : (
-          ""
         )}
       </div>
     );
