@@ -7,8 +7,9 @@ import Agenda from "./components/Agenda";
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <App /> */}
-    <Agenda />
+    <App />
+    
+    {/* <Agenda/> */}
   </React.StrictMode>,
   document.getElementById("root")
 );
