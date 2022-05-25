@@ -9,72 +9,33 @@ import {
   getFirst,
   Modal,
 } from "react-agenda";
-
 require("moment/locale/pt-br.js");
 
-//FIXME: Apagar
-const now = new Date();
-const colors = {
+const NOW = new Date();
+const COLORS = {
   "color-1": "rgba(102, 195, 131 , 1)",
   "color-2": "rgba(242, 177, 52, 1)",
   "color-3": "rgba(235, 85, 59, 1)",
   "color-4": "rgba(70, 159, 213, 1)",
   "color-5": "rgba(170, 59, 123, 1)",
 };
+
 const items = [
   {
     _id: guid(),
     name: "Conference , plaza",
     startDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
+      NOW.getFullYear(),
+      NOW.getMonth(),
+      NOW.getDate() + 1,
       11,
       0
     ),
     endDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
+      NOW.getFullYear(),
+      NOW.getMonth(),
+      NOW.getDate() + 1,
       14,
-      30
-    ),
-    classes: "color-4",
-  },
-  {
-    _id: "event-4",
-    name: "Customers issues review",
-    startDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 2,
-      10,
-      0
-    ),
-    endDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 2,
-      15,
-      0
-    ),
-    classes: "color-3",
-  },
-  {
-    _id: "event-5",
-    name: "Group activity",
-    startDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 3,
-      10,
-      0
-    ),
-    endDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 3,
-      16,
       30
     ),
     classes: "color-4",
@@ -83,16 +44,16 @@ const items = [
     _id: "event-6",
     name: "Fun Day !",
     startDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 7,
+      NOW.getFullYear(),
+      NOW.getMonth(),
+      NOW.getDate() + 7,
       9,
       14
     ),
     endDateTime: new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 7,
+      NOW.getFullYear(),
+      NOW.getMonth(),
+      NOW.getDate() + 7,
       17
     ),
     classes: "color-3",
@@ -115,8 +76,6 @@ export default class Agenda extends Component {
     };
     this.handleRangeSelection = this.handleRangeSelection.bind(this);
     this.handleItemEdit = this.handleItemEdit.bind(this);
-    this.zoomIn = this.zoomIn.bind(this);
-    this.zoomOut = this.zoomOut.bind(this);
     this._openModal = this._openModal.bind(this);
     this._closeModal = this._closeModal.bind(this);
     this.addNewEvent = this.addNewEvent.bind(this);
@@ -127,6 +86,7 @@ export default class Agenda extends Component {
   }
 
   componentDidMount() {
+    // TODO: Fazer get, pegando todos os agendamentos!
     this.setState({ items: items });
   }
 
@@ -135,26 +95,19 @@ export default class Agenda extends Component {
       this.setState({ items: next.items });
     }
   }
+
   handleItemEdit(item, openModal) {
     if (item && openModal === true) {
       this.setState({ selected: [item] });
       return this._openModal();
     }
   }
+
   handleCellSelection(item, openModal) {
     if (this.state.selected && this.state.selected[0] === item) {
       return this._openModal();
     }
     this.setState({ selected: [item] });
-  }
-
-  zoomIn() {
-    var num = this.state.cellHeight + 15;
-    this.setState({ cellHeight: num });
-  }
-  zoomOut() {
-    var num = this.state.cellHeight - 15;
-    this.setState({ cellHeight: num });
   }
 
   handleDateRangeChange(startDate, endDate) {
@@ -169,6 +122,7 @@ export default class Agenda extends Component {
   _openModal() {
     this.setState({ showModal: true });
   }
+
   _closeModal(e) {
     if (e) {
       e.stopPropagation();
@@ -186,14 +140,21 @@ export default class Agenda extends Component {
   }
 
   removeEvent(items, item) {
+    console.log("item: ", item); // TODO: dar delete no banco
+
     this.setState({ items: items });
   }
 
   addNewEvent(items, newItems) {
+    console.log("newItems: ", newItems); // TODO: Salvar NOVO AGENDAMENTO!!
+
     this.setState({ showModal: false, selected: [], items: items });
     this._closeModal();
   }
+
   editEvent(items, item) {
+    console.log("item: ", item); // TODO: Dar update no banco!!
+
     this.setState({ showModal: false, selected: [], items: items });
     this._closeModal();
   }
@@ -204,16 +165,8 @@ export default class Agenda extends Component {
 
   render() {
     return (
-      <div className="content-expanded ">
+      <div className="content-expanded">
         <div className="control-buttons">
-          <button 
-            className="button-control"
-            onClick={this._openModal}
-          >
-            {/* TODO: Botão de agendar  */}
-            <i className="schedule-icon"></i>
-          </button>
-
           <button
             className="button-control"
             onClick={this.changeView.bind(null, 7)}
@@ -244,8 +197,8 @@ export default class Agenda extends Component {
         </div>
 
         <ReactAgenda
-          minDate={new Date(now.getFullYear(), now.getMonth() - 3)}
-          maxDate={new Date(now.getFullYear(), now.getMonth() + 3)}
+          minDate={new Date(NOW.getFullYear(), NOW.getMonth() - 3)}
+          maxDate={new Date(NOW.getFullYear(), NOW.getMonth() + 3)}
           startDate={this.state.startDate}
           startAtTime={8}
           endAtTime={23}
@@ -255,7 +208,7 @@ export default class Agenda extends Component {
           numberOfDays={this.state.numberOfDays}
           headFormat={"ddd DD MMM"}
           rowsPerHour={this.state.rowsPerHour}
-          itemColors={colors}
+          itemColors={COLORS}
           helper={true}
           view="calendar"
           autoScale={false}
@@ -268,13 +221,19 @@ export default class Agenda extends Component {
           onItemRemove={this.removeEvent.bind(this)}
           onDateRangeChange={this.handleDateRangeChange.bind(this)}
         />
-        
+
         {this.state.showModal && (
           <Modal clickOutside={this._closeModal}>
             <div className="modal-content">
+              <select name="cars" id="cars">
+                <option value="volvo">Volvo</option>
+                <option value="saab">Saab</option>
+                <option value="mercedes">Mercedes</option>
+                <option value="audi">Audi</option>
+              </select>
               <ReactAgendaCtrl
                 items={this.state.items}
-                itemColors={colors}
+                itemColors={COLORS}
                 selectedCells={this.state.selected}
                 Addnew={this.addNewEvent}
                 edit={this.editEvent}
