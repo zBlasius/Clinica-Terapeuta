@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./pages/App";
 import Agenda from "./components/Agenda";
-import "./index.css"
+import App from './pages/App'
+import './index.scss';
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <App /> */}
+    <App />
     
-    <Agenda/>
+    {/* <Agenda/> */}
   </React.StrictMode>,
   document.getElementById("root")
 );
