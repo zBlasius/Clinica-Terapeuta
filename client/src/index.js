@@ -6,9 +6,9 @@ import './index.scss';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/* <App /> */}
     
-    {/* <Agenda/> */}
+    <Agenda/>
   </React.StrictMode>,
   document.getElementById("root")
 );

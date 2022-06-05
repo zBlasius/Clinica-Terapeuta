@@ -9,6 +9,7 @@ import {
   getFirst,
   Modal,
 } from "react-agenda";
+import PatientModal from "./modals/PatientModal";
 require("moment/locale/pt-br.js");
 
 const NOW = new Date();
@@ -69,15 +70,19 @@ export default class Agenda extends Component {
       selected: [],
       cellHeight: 60 / 4,
       showModal: false,
+      showPatientModal: false,
       locale: "pt-br",
       rowsPerHour: 4,
       numberOfDays: 4,
       startDate: new Date(),
+      patients: [],
     };
     this.handleRangeSelection = this.handleRangeSelection.bind(this);
     this.handleItemEdit = this.handleItemEdit.bind(this);
     this._openModal = this._openModal.bind(this);
     this._closeModal = this._closeModal.bind(this);
+    this._openPatientModal = this._openPatientModal.bind(this);
+    this._closePatientModal = this._closePatientModal.bind(this);
     this.addNewEvent = this.addNewEvent.bind(this);
     this.removeEvent = this.removeEvent.bind(this);
     this.editEvent = this.editEvent.bind(this);
@@ -88,6 +93,21 @@ export default class Agenda extends Component {
   componentDidMount() {
     // TODO: Fazer get, pegando todos os agendamentos!
     this.setState({ items: items });
+    //FIXME: getPatients
+    const patients = [
+      {
+        id: 1,
+        name: "jojo",
+        email: "jojo@gmail.com",
+      },
+      {
+        id: 2,
+        name: "jojo2",
+        email: "jojo2@gmail.com",
+      },
+    ];
+
+    this.setState({ patients: patients });
   }
 
   componentWillReceiveProps(next, last) {
@@ -131,6 +151,18 @@ export default class Agenda extends Component {
     this.setState({ showModal: false });
   }
 
+  _openPatientModal() {
+    this.setState({ showPatientModal: true });
+  }
+
+  _closePatientModal(e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    this.setState({ showPatientModal: false });
+  }
+
   handleItemChange(items, item) {
     this.setState({ items: items });
   }
@@ -166,34 +198,49 @@ export default class Agenda extends Component {
   render() {
     return (
       <div className="content-expanded">
-        <div className="control-buttons">
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 7)}
-          >
-            {moment.duration(7, "days").humanize()}
-          </button>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div className="agenda-buttons">
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 7)}
+            >
+              {moment.duration(7, "days").humanize()}
+            </button>
 
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 4)}
-          >
-            {moment.duration(4, "days").humanize()}
-          </button>
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 4)}
+            >
+              {moment.duration(4, "days").humanize()}
+            </button>
 
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 3)}
-          >
-            {moment.duration(3, "days").humanize()}
-          </button>
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 3)}
+            >
+              {moment.duration(3, "days").humanize()}
+            </button>
 
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 1)}
-          >
-            {moment.duration(1, "day").humanize()}
-          </button>
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 1)}
+            >
+              {moment.duration(1, "day").humanize()}
+            </button>
+          </div>
+
+          <div className="pacient-buttons">
+            <button className="button-control" onClick={this._openPatientModal}>
+              Pacientes
+            </button>
+          </div>
         </div>
 
         <ReactAgenda
@@ -225,11 +272,11 @@ export default class Agenda extends Component {
         {this.state.showModal && (
           <Modal clickOutside={this._closeModal}>
             <div className="modal-content">
-              <select name="cars" id="cars">
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
+              {/* TODO: Ajustar select, incluir paciente no agendamento */}
+              <select name="patients" id="patients">
+                {this.state.patients.map((patient) => (
+                  <option value={patient.id}>{patient.name}</option>
+                ))}
               </select>
               <ReactAgendaCtrl
                 items={this.state.items}
@@ -241,6 +288,13 @@ export default class Agenda extends Component {
             </div>
           </Modal>
         )}
+
+        <PatientModal
+          show={this.state.showPatientModal}
+          onRequestClose={this._closePatientModal}
+          patients={this.state.patients}
+          setPatients={(patients) => this.setState({ patients })}
+        />
       </div>
     );
   }
