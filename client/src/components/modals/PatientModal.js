@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@react-md/button";
 import { FontIcon, TextIconSpacing } from "@react-md/icon";
 import {
@@ -9,42 +9,53 @@ import {
   DialogFooter,
 } from "@react-md/dialog";
 import PatientTable from "../PatientTable";
+import CreatePatientModal from "./CreatePatientModal";
 
-function PatientModal({ show, onRequestClose, patients, setPatients }) {
+function PatientModal({ show, onRequestClose, patients, refreshPatients }) {
+  const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
+
   return (
-    <Dialog
-      visible={show}
-      onRequestClose={() => onRequestClose()}
-      style={{ minWidth: "30vw" }}
-    >
-      <DialogHeader>
-        <DialogTitle>Pacientes</DialogTitle>
-      </DialogHeader>
-      <DialogContent
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+    <>
+      <Dialog
+        visible={show}
+        onRequestClose={() => onRequestClose()}
+        style={{ minWidth: "30vw" }}
       >
-        <PatientTable patients={patients} />
-      </DialogContent>
-      <DialogFooter
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          alignItems: "center",
-        }}
-      >
-        {/* TODO: Botão de adicionar, usar setPatients */}
-        <Button onClick={null}>
-          <TextIconSpacing icon={<FontIcon>add</FontIcon>}>
-            Adicionar Paciente
-          </TextIconSpacing>
-        </Button>
-        <Button onClick={onRequestClose}>Fechar</Button>
-      </DialogFooter>
-    </Dialog>
+        <DialogHeader>
+          <DialogTitle>Pacientes</DialogTitle>
+        </DialogHeader>
+        <DialogContent
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <PatientTable patients={patients} refreshPatients={refreshPatients} />
+        </DialogContent>
+        <DialogFooter
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "center",
+          }}
+        >
+          <Button onClick={() => setShowCreatePatientModal(true)}>
+            <TextIconSpacing icon={<FontIcon>add</FontIcon>}>
+              Adicionar Paciente
+            </TextIconSpacing>
+          </Button>
+          <Button onClick={onRequestClose}>Fechar</Button>
+        </DialogFooter>
+      </Dialog>
+
+      {showCreatePatientModal && (
+        <CreatePatientModal
+          refreshPatients={refreshPatients}
+          onRequestClose={() => setShowCreatePatientModal(false)}
+        />
+      )}
+    </>
   );
 }
 

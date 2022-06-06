@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button } from "@react-md/button";
-import { FontIcon, TextIconSpacing } from "@react-md/icon";
+import { FontIcon } from "@react-md/icon";
 import {
   TableContainer,
   Table,
@@ -10,7 +10,12 @@ import {
   TableRow,
 } from "@react-md/table";
 
-function PatientTable({ patients }) {
+function PatientTable({ patients, refreshPatients }) {
+  function deletePatient(patientId) {
+    // TODO: Deletar paciente por id
+    refreshPatients();
+  }
+
   return (
     <TableContainer style={{ maxHeight: "60vh" }}>
       <Table>
@@ -25,8 +30,7 @@ function PatientTable({ patients }) {
           {patients.map((patient) => (
             <TableRow key={patient.id}>
               <TableCell>
-                {/* TODO: Excluir paciente */}
-                <Button onClick={null}>
+                <Button onClick={() => deletePatient(patient.id)}>
                   <FontIcon>delete</FontIcon>
                 </Button>
               </TableCell>

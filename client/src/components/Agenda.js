@@ -4,9 +4,6 @@ import {
   ReactAgenda,
   ReactAgendaCtrl,
   guid,
-  getUnique,
-  getLast,
-  getFirst,
   Modal,
 } from "react-agenda";
 import PatientModal from "./modals/PatientModal";
@@ -88,11 +85,16 @@ export default class Agenda extends Component {
     this.editEvent = this.editEvent.bind(this);
     this.changeView = this.changeView.bind(this);
     this.handleCellSelection = this.handleCellSelection.bind(this);
+    this.refreshPatients = this.refreshPatients.bind(this);
   }
 
   componentDidMount() {
     // TODO: Fazer get, pegando todos os agendamentos!
     this.setState({ items: items });
+    this.refreshPatients();
+  }
+
+  refreshPatients() {
     //FIXME: getPatients
     const patients = [
       {
@@ -293,7 +295,7 @@ export default class Agenda extends Component {
           show={this.state.showPatientModal}
           onRequestClose={this._closePatientModal}
           patients={this.state.patients}
-          setPatients={(patients) => this.setState({ patients })}
+          refreshPatients={this.refreshPatients}
         />
       </div>
     );
