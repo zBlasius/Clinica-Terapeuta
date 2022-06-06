@@ -1,12 +1,8 @@
 import React, { Component } from "react";
 import moment from "moment";
-import {
-  ReactAgenda,
-  ReactAgendaCtrl,
-  guid,
-  Modal,
-} from "react-agenda";
+import { ReactAgenda, ReactAgendaCtrl, guid, Modal } from "react-agenda";
 import PatientModal from "./modals/PatientModal";
+import { NativeSelect } from "@react-md/form";
 require("moment/locale/pt-br.js");
 
 const NOW = new Date();
@@ -73,6 +69,7 @@ export default class Agenda extends Component {
       numberOfDays: 4,
       startDate: new Date(),
       patients: [],
+      selectedPatientId: "",
     };
     this.handleRangeSelection = this.handleRangeSelection.bind(this);
     this.handleItemEdit = this.handleItemEdit.bind(this);
@@ -87,6 +84,8 @@ export default class Agenda extends Component {
     this.handleCellSelection = this.handleCellSelection.bind(this);
     this.refreshPatients = this.refreshPatients.bind(this);
   }
+
+  // TODO: ASSOCIAR PACIENTE COM AGENDAMENTOS -> selectedPatientId
 
   componentDidMount() {
     // TODO: Fazer get, pegando todos os agendamentos!
@@ -150,7 +149,7 @@ export default class Agenda extends Component {
       e.stopPropagation();
       e.preventDefault();
     }
-    this.setState({ showModal: false });
+    this.setState({ selectedPatientId: "", showModal: false });
   }
 
   _openPatientModal() {
@@ -274,12 +273,24 @@ export default class Agenda extends Component {
         {this.state.showModal && (
           <Modal clickOutside={this._closeModal}>
             <div className="modal-content">
-              {/* TODO: Ajustar select, incluir paciente no agendamento */}
-              <select name="patients" id="patients">
+              <NativeSelect
+                id="simple-native-select"
+                name="select"
+                label="Pacientes"
+                value={this.state.selectedPatientId}
+                onChange={(event) =>
+                  this.setState({
+                    selectedPatientId: event.currentTarget.value,
+                  })
+                }
+              >
+                <option value="" disabled hidden />
                 {this.state.patients.map((patient) => (
-                  <option value={patient.id}>{patient.name}</option>
+                  <option key={patient.id} value={patient.id}>
+                    {patient.name}
+                  </option>
                 ))}
-              </select>
+              </NativeSelect>
               <ReactAgendaCtrl
                 items={this.state.items}
                 itemColors={COLORS}
