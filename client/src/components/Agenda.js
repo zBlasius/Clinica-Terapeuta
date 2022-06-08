@@ -1,15 +1,9 @@
 import React, { Component } from "react";
 import moment from "moment";
-import api from '../api/api'
-import {
-  ReactAgenda,
-  ReactAgendaCtrl,
-  guid,
-  getUnique,
-  getLast,
-  getFirst,
-  Modal,
-} from "react-agenda";
+import api from "../api/api";
+import { ReactAgenda, ReactAgendaCtrl, guid, Modal } from "react-agenda";
+import PatientModal from "./modals/PatientModal";
+import { NativeSelect } from "@react-md/form";
 require("moment/locale/pt-br.js");
 
 const NOW = new Date();
@@ -70,24 +64,52 @@ export default class Agenda extends Component {
       selected: [],
       cellHeight: 60 / 4,
       showModal: false,
+      showPatientModal: false,
       locale: "pt-br",
       rowsPerHour: 4,
       numberOfDays: 4,
       startDate: new Date(),
+      patients: [],
+      selectedPatientId: "",
     };
     this.handleRangeSelection = this.handleRangeSelection.bind(this);
     this.handleItemEdit = this.handleItemEdit.bind(this);
     this._openModal = this._openModal.bind(this);
     this._closeModal = this._closeModal.bind(this);
+    this._openPatientModal = this._openPatientModal.bind(this);
+    this._closePatientModal = this._closePatientModal.bind(this);
     this.addNewEvent = this.addNewEvent.bind(this);
     this.removeEvent = this.removeEvent.bind(this);
     this.editEvent = this.editEvent.bind(this);
     this.changeView = this.changeView.bind(this);
     this.handleCellSelection = this.handleCellSelection.bind(this);
+    this.refreshPatients = this.refreshPatients.bind(this);
   }
 
+  // TODO: ASSOCIAR PACIENTE COM AGENDAMENTOS -> selectedPatientId
+
   componentDidMount() {
-   // this.refreshList()
+    // TODO: Fazer get, pegando todos os agendamentos!
+    this.setState({ items: items });
+    this.refreshPatients();
+  }
+
+  refreshPatients() {
+    //FIXME: getPatients
+    const patients = [
+      {
+        id: 1,
+        name: "jojo",
+        email: "jojo@gmail.com",
+      },
+      {
+        id: 2,
+        name: "jojo2",
+        email: "jojo2@gmail.com",
+      },
+    ];
+
+    this.setState({ patients: patients });
   }
 
   componentWillReceiveProps(next, last) {
@@ -136,7 +158,19 @@ export default class Agenda extends Component {
       e.stopPropagation();
       e.preventDefault();
     }
-    this.setState({ showModal: false });
+    this.setState({ selectedPatientId: "", showModal: false });
+  }
+
+  _openPatientModal() {
+    this.setState({ showPatientModal: true });
+  }
+
+  _closePatientModal(e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    this.setState({ showPatientModal: false });
   }
 
   handleItemChange(items, item) {
@@ -182,34 +216,49 @@ export default class Agenda extends Component {
   render() {
     return (
       <div className="content-expanded">
-        <div className="control-buttons">
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 7)}
-          >
-            {moment.duration(7, "days").humanize()}
-          </button>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div className="agenda-buttons">
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 7)}
+            >
+              {moment.duration(7, "days").humanize()}
+            </button>
 
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 4)}
-          >
-            {moment.duration(4, "days").humanize()}
-          </button>
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 4)}
+            >
+              {moment.duration(4, "days").humanize()}
+            </button>
 
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 3)}
-          >
-            {moment.duration(3, "days").humanize()}
-          </button>
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 3)}
+            >
+              {moment.duration(3, "days").humanize()}
+            </button>
 
-          <button
-            className="button-control"
-            onClick={this.changeView.bind(null, 1)}
-          >
-            {moment.duration(1, "day").humanize()}
-          </button>
+            <button
+              className="button-control"
+              onClick={this.changeView.bind(null, 1)}
+            >
+              {moment.duration(1, "day").humanize()}
+            </button>
+          </div>
+
+          <div className="pacient-buttons">
+            <button className="button-control" onClick={this._openPatientModal}>
+              Pacientes
+            </button>
+          </div>
         </div>
 
         <ReactAgenda
@@ -241,12 +290,24 @@ export default class Agenda extends Component {
         {this.state.showModal && (
           <Modal clickOutside={this._closeModal}>
             <div className="modal-content">
-              <select name="cars" id="cars">
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
-              </select>
+              <NativeSelect
+                id="simple-native-select"
+                name="select"
+                label="Pacientes"
+                value={this.state.selectedPatientId}
+                onChange={(event) =>
+                  this.setState({
+                    selectedPatientId: event.currentTarget.value,
+                  })
+                }
+              >
+                <option value="" disabled hidden />
+                {this.state.patients.map((patient) => (
+                  <option key={patient.id} value={patient.id}>
+                    {patient.name}
+                  </option>
+                ))}
+              </NativeSelect>
               <ReactAgendaCtrl
                 items={this.state.items}
                 itemColors={COLORS}
@@ -257,6 +318,13 @@ export default class Agenda extends Component {
             </div>
           </Modal>
         )}
+
+        <PatientModal
+          show={this.state.showPatientModal}
+          onRequestClose={this._closePatientModal}
+          patients={this.state.patients}
+          refreshPatients={this.refreshPatients}
+        />
       </div>
     );
   }
