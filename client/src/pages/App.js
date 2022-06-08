@@ -2,6 +2,7 @@ import "./App.css";
 import React, { useEffect, useState } from "react";
 import api from '../api/api'
 import config from '../config.json'
+import Agenda from "../components/Agenda";
 
 const { initializeApp } = require("firebase/app");
 const {
@@ -20,27 +21,30 @@ function App() {
 
   useEffect(() => {
 
+    
+    
+    //api.post('update', { user: user?.email, kind: 'Agendamentos', id: 'r6Nl5kbUuPIc3LIsq0jl', params: { name: 'atualizou', opa: 2, age: 301111111, school: 'graSDFSDFDSFSDFdueted' } })
+    //   .then(res => {
+    //     console.log("CAIU NO IF", res)
+    //   })
+    //   .catch(err => {
+    //     console.log('err', err)
+    //   })
+
     onAuthStateChanged(auth, user => {
 
-      api.post('post', {user: user.email, kind:'Agendamentos', params:{ name:'joel',age:30,school:'formado' }})
-        .then(res => {
-        console.log("teste res", res)
-      })
-
       if (user != null) {
-        setUser(user)
+        setUser({...user})
       } else {
         signInWithRedirect(auth, provider);
       }
     });
 
-
-
   }, [])
 
   return (
     <div className="App">
-      <span> teste </span>
+      <Agenda user={user}/>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
+import api from '../api/api'
 import {
   ReactAgenda,
   ReactAgendaCtrl,
@@ -22,7 +23,7 @@ const COLORS = {
 
 const items = [
   {
-    _id: guid(),
+    id: guid(),
     name: "Conference , plaza",
     startDateTime: new Date(
       NOW.getFullYear(),
@@ -41,7 +42,7 @@ const items = [
     classes: "color-4",
   },
   {
-    _id: "event-6",
+    id: "event-6",
     name: "Fun Day !",
     startDateTime: new Date(
       NOW.getFullYear(),
@@ -86,14 +87,21 @@ export default class Agenda extends Component {
   }
 
   componentDidMount() {
-    // TODO: Fazer get, pegando todos os agendamentos!
-    this.setState({ items: items });
+   // this.refreshList()
   }
 
   componentWillReceiveProps(next, last) {
     if (next.items) {
+      console.log("teste next'", this.state.items)
       this.setState({ items: next.items });
     }
+  }
+
+  refreshList() {
+    // api.get('get_all', {params:{user: 'gustavo.blasius@clinicorp.com', kind:'Agendamentos'}})
+    //   .then(res => {
+    //     this.setState({items:res.data})
+    // })
   }
 
   handleItemEdit(item, openModal) {
@@ -142,13 +150,21 @@ export default class Agenda extends Component {
   removeEvent(items, item) {
     console.log("item: ", item); // TODO: dar delete no banco
 
+
+
+
     this.setState({ items: items });
   }
 
-  addNewEvent(items, newItems) {
-    console.log("newItems: ", newItems); // TODO: Salvar NOVO AGENDAMENTO!!
-
-    this.setState({ showModal: false, selected: [], items: items });
+  addNewEvent(items, item) {
+    delete item._id;
+    api.post('post', { user: this.props?.user?.email, kind: 'Agendamentos', params: item })
+      .then(resp => {
+        this.refreshList();
+      })
+      .catch(err => {
+        alert('DEU ZIKA BOY')
+      })
     this._closeModal();
   }
 

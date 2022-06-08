@@ -1,6 +1,6 @@
 import 'firebase/firestore';
 
-import { getFirestore, collection, getDocs, doc, setDoc, addDoc } from 'firebase/firestore';
+import { getFirestore, collection,getDocFromCache, setDoc, getDoc, getDocs, doc, addDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 //import {config} from '../config.json';
 
@@ -13,7 +13,7 @@ const firebaseApp = initializeApp({
     messagingSenderId: "318941583719",
     appId: "1:318941583719:web:0ee31d87c17a4e42c4f7c2",
     measurementId: "G-JYSNCPGLKL"
-});
+  });
 
 const db = getFirestore(firebaseApp);
 
@@ -38,14 +38,13 @@ const crud = {
     /**
          * Função destinada a pegar todos os dados de uma coleção
          * 
-         * @param   {Any} Any    Any
-         * @param   {Any} Any    Any
-         * @param   {Any} Any    Any
-         * @returns {Any}
+         * @param   {String} user    Usuário em que será feito o get
+         * @param   {String} kind    Coleção requisitada
+         * @returns {Array} É retornado um array de objetos
     */
-    getAll: (entity, filter) => {
-        const citiesCol = collection(db, entity);
-        return getDocs(citiesCol).then(resp => {
+    getAll: async(user, kind) => {
+        const postCol = collection(db, `psicodevlicos/${user}/${kind}`);
+        return getDocs(postCol).then(resp => {
             const returnList = resp.docs.map(doc => doc.data());
             return returnList;
         });
@@ -60,12 +59,25 @@ const crud = {
          * @returns {Array}
     */
     post: (user, kind, data) => {
-        //const userNamespace = db.collection('psicodevlicos').doc('joel_marcos@gmail.com');
-        const agendamentos = collection(db, `psicodevlicos/${user}/${kind}`)
-        return addDoc(agendamentos, data);
+        const _post = collection(db, `psicodevlicos/${user}/${kind}`)
+        return addDoc(_post, data).then(resp=>{
+            return {...data, id:resp.id}
+        })
+    },
+
+    /**
+         * Função destinada a atualizar dados ao firebase
+         * 
+         * @param   {String} user    Usuário a ser requeridos os dados 
+         * @param   {String} kind    Coleção a ser pesquisada
+         * @param   {Object} id      id do documento a ser atualizado
+         * @param   {Object} data    Dados que serão atualizados
+         * @returns {Array}
+    */
+    update: async(user, kind, id, data) =>{
+        const _post = doc(db, `psicodevlicos`, user , kind, id)
+        return setDoc(_post, data)
     }
 }
 
 export default crud;
-
-//module.exports = crud;
