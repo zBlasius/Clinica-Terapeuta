@@ -89,7 +89,7 @@ export default class Agenda extends Component {
   // TODO: ASSOCIAR PACIENTE COM AGENDAMENTOS -> selectedPatientId
 
   componentDidMount() {
-    // TODO: Fazer get, pegando todos os agendamentos!
+    // TODO:  Fazer get, pegando todos os agendamentos!
     this.setState({ items: items });
     this.refreshPatients();
   }
@@ -120,10 +120,10 @@ export default class Agenda extends Component {
   }
 
   refreshList() {
-    // api.get('get_all', {params:{user: 'gustavo.blasius@clinicorp.com', kind:'Agendamentos'}})
-    //   .then(res => {
-    //     this.setState({items:res.data})
-    // })
+    api.get('get_all', {params:{user: 'gustavo.blasius@clinicorp.com', kind:'Agendamentos'}})
+      .then(res => {
+        console.log('teste all', res.data)
+    })
   }
 
   handleItemEdit(item, openModal) {
@@ -183,9 +183,6 @@ export default class Agenda extends Component {
 
   removeEvent(items, item) {
     console.log("item: ", item); // TODO: dar delete no banco
-
-
-
 
     this.setState({ items: items });
   }

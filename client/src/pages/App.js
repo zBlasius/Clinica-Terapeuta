@@ -20,16 +20,14 @@ function App() {
   const [user, setUser] = useState()
 
   useEffect(() => {
-
     
-    
-    //api.post('update', { user: user?.email, kind: 'Agendamentos', id: 'r6Nl5kbUuPIc3LIsq0jl', params: { name: 'atualizou', opa: 2, age: 301111111, school: 'graSDFSDFDSFSDFdueted' } })
-    //   .then(res => {
-    //     console.log("CAIU NO IF", res)
-    //   })
-    //   .catch(err => {
-    //     console.log('err', err)
-    //   })
+    api.post('update', { user: user?.email, kind: 'Agendamentos', id: 'r6Nl5kbUuPIc3LIsq0jl', params: { name: 'atualizou', opa: 2, age: 301111111, school: 'graSDFSDFDSFSDFdueted' } })
+      .then(res => {
+        console.log("CAIU NO IF", res)
+      })
+      .catch(err => {
+        console.log('err', err)
+    })
 
     onAuthStateChanged(auth, user => {
 
