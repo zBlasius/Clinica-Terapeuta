@@ -13,6 +13,7 @@ import CreatePatientModal from "./CreatePatientModal";
 
 function PatientModal({ show, onRequestClose, patients, refreshPatients }) {
   const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
+  const [patientToEdit, setPatientToEdit] = useState({});
 
   return (
     <>
@@ -31,7 +32,14 @@ function PatientModal({ show, onRequestClose, patients, refreshPatients }) {
             alignItems: "center",
           }}
         >
-          <PatientTable patients={patients} refreshPatients={refreshPatients} />
+          <PatientTable
+            patients={patients}
+            editPatient={(patientToEdit) => {
+              setPatientToEdit(patientToEdit);
+              setShowCreatePatientModal(true);
+            }}
+            refreshPatients={refreshPatients}
+          />
         </DialogContent>
         <DialogFooter
           style={{
@@ -40,19 +48,29 @@ function PatientModal({ show, onRequestClose, patients, refreshPatients }) {
             alignItems: "center",
           }}
         >
-          <Button onClick={() => setShowCreatePatientModal(true)}>
+          <Button theme="clear" themeType="outline" onClick={onRequestClose}>
+            Fechar
+          </Button>
+          <Button
+            theme="primary"
+            themeType="contained"
+            onClick={() => setShowCreatePatientModal(true)}
+          >
             <TextIconSpacing icon={<FontIcon>add</FontIcon>}>
               Adicionar Paciente
             </TextIconSpacing>
           </Button>
-          <Button onClick={onRequestClose}>Fechar</Button>
         </DialogFooter>
       </Dialog>
 
       {showCreatePatientModal && (
         <CreatePatientModal
+          patientToEdit={patientToEdit}
           refreshPatients={refreshPatients}
-          onRequestClose={() => setShowCreatePatientModal(false)}
+          onRequestClose={() => {
+            setPatientToEdit({});
+            setShowCreatePatientModal(false);
+          }}
         />
       )}
     </>

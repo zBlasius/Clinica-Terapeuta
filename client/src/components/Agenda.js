@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Button } from "@react-md/button";
 import moment from "moment";
 import api from "../api/api";
 import { ReactAgenda, ReactAgendaCtrl, guid, Modal } from "react-agenda";
@@ -114,16 +115,19 @@ export default class Agenda extends Component {
 
   componentWillReceiveProps(next, last) {
     if (next.items) {
-      console.log("teste next'", this.state.items)
+      console.log("teste next'", this.state.items);
       this.setState({ items: next.items });
     }
   }
 
   refreshList() {
-    api.get('get_all', {params:{user: 'gustavo.blasius@clinicorp.com', kind:'Agendamentos'}})
-      .then(res => {
-        console.log('teste all', res.data)
-    })
+    api
+      .get("get_all", {
+        params: { user: "gustavo.blasius@clinicorp.com", kind: "Agendamentos" },
+      })
+      .then((res) => {
+        console.log("teste all", res.data);
+      });
   }
 
   handleItemEdit(item, openModal) {
@@ -189,13 +193,18 @@ export default class Agenda extends Component {
 
   addNewEvent(items, item) {
     delete item._id;
-    api.post('post', { user: this.props?.user?.email, kind: 'Agendamentos', params: item })
-      .then(resp => {
+    api
+      .post("post", {
+        user: this.props?.user?.email,
+        kind: "Agendamentos",
+        params: item,
+      })
+      .then((resp) => {
         this.refreshList();
       })
-      .catch(err => {
-        alert('DEU ZIKA BOY')
-      })
+      .catch((err) => {
+        alert("DEU ZIKA BOY");
+      });
     this._closeModal();
   }
 
@@ -222,39 +231,52 @@ export default class Agenda extends Component {
           }}
         >
           <div className="agenda-buttons">
-            <button
-              className="button-control"
+            <Button
+              theme="secondary"
+              themeType="outline"
+              style={{ margin: "0px 4px" }}
               onClick={this.changeView.bind(null, 7)}
             >
               {moment.duration(7, "days").humanize()}
-            </button>
+            </Button>
 
-            <button
-              className="button-control"
+            <Button
+              theme="secondary"
+              themeType="outline"
+              style={{ margin: "0px 4px" }}
               onClick={this.changeView.bind(null, 4)}
             >
               {moment.duration(4, "days").humanize()}
-            </button>
+            </Button>
 
-            <button
-              className="button-control"
+            <Button
+              theme="secondary"
+              themeType="outline"
+              style={{ margin: "0px 4px" }}
               onClick={this.changeView.bind(null, 3)}
             >
               {moment.duration(3, "days").humanize()}
-            </button>
+            </Button>
 
-            <button
-              className="button-control"
+            <Button
+              theme="secondary"
+              themeType="outline"
+              style={{ margin: "0px 4px" }}
               onClick={this.changeView.bind(null, 1)}
             >
               {moment.duration(1, "day").humanize()}
-            </button>
+            </Button>
           </div>
 
           <div className="pacient-buttons">
-            <button className="button-control" onClick={this._openPatientModal}>
+            <Button
+              theme="secondary"
+              themeType="outline"
+              style={{ margin: "0px 4px" }}
+              onClick={this._openPatientModal}
+            >
               Pacientes
-            </button>
+            </Button>
           </div>
         </div>
 

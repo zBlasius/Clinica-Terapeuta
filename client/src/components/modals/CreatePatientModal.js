@@ -9,7 +9,11 @@ import {
 } from "@react-md/dialog";
 import { Form, TextFieldWithMessage, useTextField } from "@react-md/form";
 
-function CreatePatientModal({ onRequestClose, refreshPatients }) {
+function CreatePatientModal({
+  onRequestClose,
+  refreshPatients,
+  patientToEdit,
+}) {
   const [errors, setErrors] = useState({});
   const errored = useMemo(() => Object.values(errors).some(Boolean), [errors]);
   const onErrorChange = useCallback(
@@ -18,22 +22,30 @@ function CreatePatientModal({ onRequestClose, refreshPatients }) {
   );
   const [_name, nameFieldProps] = useTextField({
     id: "name",
+    defaultValue: patientToEdit?.name,
     required: true,
     maxLength: 50,
     onErrorChange,
   });
   const [_email, emailFieldProps] = useTextField({
     id: "email",
+    defaultValue: patientToEdit?.email,
     required: true,
     helpText: "exemplo@email.com",
     pattern: "^[a-z0-9.]+@[a-z0-9]+.[a-z]+.([a-z]+)?$",
     onErrorChange,
   });
 
-  function createPatient(name, email) {
-    if (errored) {
+  function upcreatePatient(name, email) {
+    if (errored || email == "") {
       return;
     }
+
+    const patient = patientToEdit?.id
+      ? { ...patientToEdit, name, email }
+      : { name, email };
+
+    // TODO: Inserir upcreate!
 
     refreshPatients();
     onRequestClose();
@@ -49,25 +61,20 @@ function CreatePatientModal({ onRequestClose, refreshPatients }) {
         <DialogHeader>
           <DialogTitle>Adicionar Paciente</DialogTitle>
         </DialogHeader>
-        <DialogContent
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        ></DialogContent>
-        <TextFieldWithMessage
-          {...nameFieldProps}
-          name="name"
-          label="Nome"
-          placeholder="Insira o nome do Paciente"
-        />
-        <TextFieldWithMessage
-          {...emailFieldProps}
-          name="email"
-          label="E-Mail"
-          placeholder="Insira o e-mail do Paciente"
-        />
+        <DialogContent>
+          <TextFieldWithMessage
+            {...nameFieldProps}
+            name="name"
+            label="Nome"
+            placeholder="Insira o nome do Paciente"
+          />
+          <TextFieldWithMessage
+            {...emailFieldProps}
+            name="email"
+            label="E-Mail"
+            placeholder="Insira o e-mail do Paciente"
+          />
+        </DialogContent>
         <DialogFooter
           style={{
             display: "flex",
@@ -75,11 +82,15 @@ function CreatePatientModal({ onRequestClose, refreshPatients }) {
             alignItems: "center",
           }}
         >
-          <Button onClick={onRequestClose}>Cancelar</Button>
+          <Button theme="clear" themeType="outline" onClick={onRequestClose}>
+            Cancelar
+          </Button>
           <Button
-            onClick={() => createPatient(_name, _email)}
-            type="submit"
             disabled={errored}
+            type="submit"
+            theme="primary"
+            themeType="contained"
+            onClick={() => upcreatePatient(_name, _email)}
           >
             Confirmar
           </Button>

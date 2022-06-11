@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@react-md/table";
 
-function PatientTable({ patients, refreshPatients }) {
+function PatientTable({ patients, refreshPatients, editPatient }) {
   function deletePatient(patientId) {
     // TODO: Deletar paciente por id
     refreshPatients();
@@ -21,21 +21,27 @@ function PatientTable({ patients, refreshPatients }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableCell />
             <TableCell>Nome</TableCell>
             <TableCell>Email</TableCell>
+            <TableCell></TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableHeader>
         <TableBody>
           {patients.map((patient) => (
             <TableRow key={patient.id}>
+              <TableCell>{patient.name}</TableCell>
+              <TableCell>{patient.email}</TableCell>
               <TableCell>
                 <Button onClick={() => deletePatient(patient.id)}>
                   <FontIcon>delete</FontIcon>
                 </Button>
               </TableCell>
-              <TableCell>{patient.name}</TableCell>
-              <TableCell>{patient.email}</TableCell>
+              <TableCell>
+                <Button onClick={() => editPatient(patient)}>
+                  <FontIcon>edit</FontIcon>
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
