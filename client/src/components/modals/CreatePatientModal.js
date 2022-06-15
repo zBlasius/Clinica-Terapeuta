@@ -8,11 +8,13 @@ import {
   DialogFooter,
 } from "@react-md/dialog";
 import { Form, TextFieldWithMessage, useTextField } from "@react-md/form";
+import api from "../../api/api";
 
 function CreatePatientModal({
   onRequestClose,
   refreshPatients,
   patientToEdit,
+  user
 }) {
   const [errors, setErrors] = useState({});
   const errored = useMemo(() => Object.values(errors).some(Boolean), [errors]);
@@ -45,10 +47,14 @@ function CreatePatientModal({
       ? { ...patientToEdit, name, email }
       : { name, email };
 
-    // TODO: Inserir upcreate!
-
-    refreshPatients();
-    onRequestClose();
+    api.post("upcreate", {user: user?.email, kind: "Patient", params: patient})
+      .then((resp) => {
+        refreshPatients();
+        onRequestClose();
+      })
+      .catch((err) => {
+        alert("DEU ZIKA BOY");
+      });
   }
 
   return (
@@ -59,7 +65,7 @@ function CreatePatientModal({
     >
       <Form>
         <DialogHeader>
-          <DialogTitle>Adicionar Paciente</DialogTitle>
+          <DialogTitle>{ patientToEdit?.id ? 'Editar Paciente' : 'Adicionar Paciente'}</DialogTitle>
         </DialogHeader>
         <DialogContent>
           <TextFieldWithMessage

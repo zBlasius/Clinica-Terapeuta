@@ -11,7 +11,7 @@ import {
 import PatientTable from "../PatientTable";
 import CreatePatientModal from "./CreatePatientModal";
 
-function PatientModal({ show, onRequestClose, patients, refreshPatients }) {
+function PatientModal({ show, onRequestClose, patients, refreshPatients , user}) {
   const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
   const [patientToEdit, setPatientToEdit] = useState({});
 
@@ -65,6 +65,7 @@ function PatientModal({ show, onRequestClose, patients, refreshPatients }) {
 
       {showCreatePatientModal && (
         <CreatePatientModal
+          user={user}
           patientToEdit={patientToEdit}
           refreshPatients={refreshPatients}
           onRequestClose={() => {

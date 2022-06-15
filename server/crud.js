@@ -1,8 +1,7 @@
 import 'firebase/firestore';
 
-import { getFirestore, collection,getDocFromCache, setDoc, getDoc, getDocs, doc, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, setDoc, deleteDoc, getDocs, doc, addDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
-//import {config} from '../config.json';
 
 
 const firebaseApp = initializeApp({
@@ -13,9 +12,24 @@ const firebaseApp = initializeApp({
     messagingSenderId: "318941583719",
     appId: "1:318941583719:web:0ee31d87c17a4e42c4f7c2",
     measurementId: "G-JYSNCPGLKL"
-  });
+});
 
 const db = getFirestore(firebaseApp);
+
+function post(user, kind, data) {
+    console.log("teste entrou no post", user, kind, data)
+    const _post = collection(db, `psicodevlicos/${user}/${kind}`)
+    return addDoc(_post, data).then(resp => {
+        return { ...data, id: resp.id }
+    })
+}
+
+function update(user, kind, id, data){
+    console.log("teste entrou no update",  user, kind, data)
+    const _post = doc(db, `psicodevlicos`, user, kind, id)
+    return setDoc(_post, data)
+}
+
 
 const crud = {
 
@@ -35,6 +49,7 @@ const crud = {
         });
     },
 
+
     /**
          * Função destinada a pegar todos os dados de uma coleção
          * 
@@ -42,10 +57,10 @@ const crud = {
          * @param   {String} kind    Coleção requisitada
          * @returns {Array} É retornado um array de objetos
     */
-    getAll: async(user, kind) => {
+    getAll: (user, kind) => {
         const postCol = collection(db, `psicodevlicos/${user}/${kind}`);
         return getDocs(postCol).then(resp => {
-            const returnList = resp.docs.map(doc => doc.data());
+            const returnList = resp.docs.map(doc => { return { id: doc.id, ...doc.data() } });
             return returnList;
         });
     },
@@ -58,12 +73,27 @@ const crud = {
          * @param   {Object} data    Dados que serão inseridos
          * @returns {Array}
     */
-    post: (user, kind, data) => {
-        const _post = collection(db, `psicodevlicos/${user}/${kind}`)
-        return addDoc(_post, data).then(resp=>{
-            return {...data, id:resp.id}
-        })
+    upcreate: (data) => {
+        const {user, kind, params} = data;
+
+        if (params.id) {
+            return update(user, kind, params.id, params);
+        }
+
+        return post(user, kind, params);
     },
+
+
+    /**
+         * Função destinada a enviar dados ao firebase
+         * 
+         * @param   {String} user    Usuário a ser requeridos os dados 
+         * @param   {String} kind    Coleção a ser pesquisada
+         * @param   {Object} data    Dados que serão inseridos
+         * @returns {Array}
+    */
+    post,
+
 
     /**
          * Função destinada a atualizar dados ao firebase
@@ -74,10 +104,29 @@ const crud = {
          * @param   {Object} data    Dados que serão atualizados
          * @returns {Array}
     */
-    update: async(user, kind, id, data) =>{
-        const _post = doc(db, `psicodevlicos`, user , kind, id)
-        return setDoc(_post, data)
+    update,
+
+
+    /**
+        * Função destinada a deletar dados do firebase
+        * 
+        * @param   {String} user    Usuário a ser requeridos os dados 
+        * @param   {String} kind    Coleção a ser pesquisada
+        * @param   {Object} id      id do documento a ser deletado
+        * @returns {Array}
+   */
+    delete: (user, kind, id) => { // FIXME: it's not working
+        const _delete = doc(db, `psicodevlicos`, user, kind, id)
+        return deleteDoc(_delete).then(resp => {
+            return { ...resp }
+        });
     }
 }
+
+//TODO LIST:
+// 1 - função de delete - ok
+// 2 - listagem de pacientes - ok
+// 3 - middleware user - loading
+// 4 - Juntar info de pacientes nos agendamentos - 
 
 export default crud;

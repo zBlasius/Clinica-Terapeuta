@@ -20,13 +20,7 @@ const items = [
   {
     id: guid(),
     name: "Conference , plaza",
-    startDateTime: new Date(
-      NOW.getFullYear(),
-      NOW.getMonth(),
-      NOW.getDate() + 1,
-      11,
-      0
-    ),
+    startDateTime: "2022-06-15T16:30:00.000Z",
     endDateTime: new Date(
       NOW.getFullYear(),
       NOW.getMonth(),
@@ -90,44 +84,43 @@ export default class Agenda extends Component {
   // TODO: ASSOCIAR PACIENTE COM AGENDAMENTOS -> selectedPatientId
 
   componentDidMount() {
-    // TODO:  Fazer get, pegando todos os agendamentos!
-    this.setState({ items: items });
+    this.refreshAppointments();
     this.refreshPatients();
   }
 
   refreshPatients() {
     //FIXME: getPatients
-    const patients = [
-      {
-        id: 1,
-        name: "jojo",
-        email: "jojo@gmail.com",
-      },
-      {
-        id: 2,
-        name: "jojo2",
-        email: "jojo2@gmail.com",
-      },
-    ];
-
-    this.setState({ patients: patients });
+    api.get('get_all', { params: { user: this.props.user?.email, kind: 'Patient' } })
+      .then(res => {
+        this.setState({ patients: res.data });
+      })
+      .catch(err => {
+        console.log('err', err)
+      })
   }
 
   componentWillReceiveProps(next, last) {
     if (next.items) {
-      console.log("teste next'", this.state.items);
       this.setState({ items: next.items });
     }
   }
 
-  refreshList() {
-    api
-      .get("get_all", {
-        params: { user: "gustavo.blasius@clinicorp.com", kind: "Agendamentos" },
+  refreshAppointments() {
+    api.get('get_all', { params: { user: this.props.user?.email, kind: 'Agendamentos' } })
+      .then(res => {
+        let _listAppointments = res.data;
+        const listAppointments = _listAppointments.map(schedule => {
+          return {
+            ...schedule,
+            startDateTime: new Date(schedule.startDateTime),
+            endDateTime: new Date(schedule.endDateTime)
+          }
+        })
+        this.setState({ items: listAppointments });
       })
-      .then((res) => {
-        console.log("teste all", res.data);
-      });
+      .catch(err => {
+        console.log('err', err)
+      })
   }
 
   handleItemEdit(item, openModal) {
@@ -193,14 +186,9 @@ export default class Agenda extends Component {
 
   addNewEvent(items, item) {
     delete item._id;
-    api
-      .post("post", {
-        user: this.props?.user?.email,
-        kind: "Agendamentos",
-        params: item,
-      })
+    api.post("upcreate", { user: this.props?.user?.email, kind: "Agendamentos", params: item,})
       .then((resp) => {
-        this.refreshList();
+        this.refreshAppointments();
       })
       .catch((err) => {
         alert("DEU ZIKA BOY");
@@ -209,7 +197,7 @@ export default class Agenda extends Component {
   }
 
   editEvent(items, item) {
-    console.log("item: ", item); // TODO: Dar update no banco!!
+    console.log("item: ", item); 
 
     this.setState({ showModal: false, selected: [], items: items });
     this._closeModal();
@@ -339,6 +327,7 @@ export default class Agenda extends Component {
         )}
 
         <PatientModal
+          user={this.props.user}
           show={this.state.showPatientModal}
           onRequestClose={this._closePatientModal}
           patients={this.state.patients}
