@@ -16,6 +16,12 @@ const COLORS = {
   "color-5": "rgba(170, 59, 123, 1)",
 };
 
+// TODO:
+// 1- Verificar questão do id e _id, no front tem que ser tudo _id no back tudo id
+// 2- Edicao do agendamento (cuidar pra ver se ta passando)
+// 3- Deletar agendamento
+// 4- Deletar paciente
+
 export default class Agenda extends Component {
   constructor(props) {
     super(props);
