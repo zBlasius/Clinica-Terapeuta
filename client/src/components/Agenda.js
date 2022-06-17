@@ -16,40 +16,6 @@ const COLORS = {
   "color-5": "rgba(170, 59, 123, 1)",
 };
 
-const items = [
-  {
-    id: guid(),
-    name: "Conference , plaza",
-    startDateTime: "2022-06-15T16:30:00.000Z",
-    endDateTime: new Date(
-      NOW.getFullYear(),
-      NOW.getMonth(),
-      NOW.getDate() + 1,
-      14,
-      30
-    ),
-    classes: "color-4",
-  },
-  {
-    id: "event-6",
-    name: "Fun Day !",
-    startDateTime: new Date(
-      NOW.getFullYear(),
-      NOW.getMonth(),
-      NOW.getDate() + 7,
-      9,
-      14
-    ),
-    endDateTime: new Date(
-      NOW.getFullYear(),
-      NOW.getMonth(),
-      NOW.getDate() + 7,
-      17
-    ),
-    classes: "color-3",
-  },
-];
-
 export default class Agenda extends Component {
   constructor(props) {
     super(props);
@@ -81,15 +47,12 @@ export default class Agenda extends Component {
     this.refreshPatients = this.refreshPatients.bind(this);
   }
 
-  // TODO: ASSOCIAR PACIENTE COM AGENDAMENTOS -> selectedPatientId
-
   componentDidMount() {
     this.refreshAppointments();
     this.refreshPatients();
   }
 
   refreshPatients() {
-    //FIXME: getPatients
     api.get('get_all', { params: { user: this.props.user?.email, kind: 'Patient' } })
       .then(res => {
         this.setState({ patients: res.data });
@@ -127,7 +90,7 @@ export default class Agenda extends Component {
 
   handleItemEdit(item, openModal) {
     if (item && openModal === true) {
-      this.setState({ selected: [item] });
+      this.setState({ selected: [item], selectedPatientId: item.patientId });
       return this._openModal();
     }
   }
@@ -188,6 +151,7 @@ export default class Agenda extends Component {
 
   addNewEvent(items, item) {
     delete item._id;
+    item.patientId = this.props.selectedPatientId;
     api.post("upcreate", { user: this.props?.user?.email, kind: "Agendamentos", params: item,})
       .then((resp) => {
         this.refreshAppointments();
@@ -200,6 +164,7 @@ export default class Agenda extends Component {
 
   editEvent(items, item) {
     console.log("item: ", item); 
+    //TODO: Adicionar paciente
 
     this.setState({ showModal: false, selected: [], items: items });
     this._closeModal();
