@@ -112,6 +112,8 @@ export default class Agenda extends Component {
         const listAppointments = _listAppointments.map(schedule => {
           return {
             ...schedule,
+            id: undefined,
+            _id: schedule.id,
             startDateTime: new Date(schedule.startDateTime),
             endDateTime: new Date(schedule.endDateTime)
           }
