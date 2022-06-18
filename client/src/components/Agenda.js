@@ -18,9 +18,6 @@ const COLORS = {
 
 // TODO:
 // 1- Verificar questão do id e _id, no front tem que ser tudo _id no back tudo id
-// 2- Edicao do agendamento (cuidar pra ver se ta passando)
-// 3- Deletar agendamento
-// 4- Deletar paciente
 
 export default class Agenda extends Component {
   constructor(props) {
@@ -59,13 +56,16 @@ export default class Agenda extends Component {
   }
 
   refreshPatients() {
-    api.get('get_all', { params: { user: this.props.user?.email, kind: 'Patient' } })
-      .then(res => {
+    api
+      .get("get_all", {
+        params: { user: this.props.user?.email, kind: "Patient" },
+      })
+      .then((res) => {
         this.setState({ patients: res.data });
       })
-      .catch(err => {
-        console.log('err', err)
-      })
+      .catch((err) => {
+        console.log("err", err);
+      });
   }
 
   componentWillReceiveProps(next, last) {
@@ -75,28 +75,35 @@ export default class Agenda extends Component {
   }
 
   refreshAppointments() {
-    api.get('get_all', { params: { user: this.props.user?.email, kind: 'Agendamentos' } })
-      .then(res => {
+    api
+      .get("get_all", {
+        params: { user: this.props.user?.email, kind: "Agendamentos" },
+      })
+      .then((res) => {
         let _listAppointments = res.data;
-        const listAppointments = _listAppointments.map(schedule => {
+        const listAppointments = _listAppointments.map((schedule) => {
+          const oldId = schedule.id
+          delete schedule.id
           return {
             ...schedule,
-            id: undefined,
-            _id: schedule.id,
+            _id: oldId,
             startDateTime: new Date(schedule.startDateTime),
-            endDateTime: new Date(schedule.endDateTime)
-          }
-        })
+            endDateTime: new Date(schedule.endDateTime),
+          };
+        });
         this.setState({ items: listAppointments });
       })
-      .catch(err => {
-        console.log('err', err)
-      })
+      .catch((err) => {
+        console.log("err", err);
+      });
   }
 
   handleItemEdit(item, openModal) {
     if (item && openModal === true) {
-      this.setState({ selected: [item], selectedPatientId: item.patientId });
+      this.setState({
+        selected: [item],
+        selectedPatientId: item.patientId || "",
+      });
       return this._openModal();
     }
   }
@@ -150,15 +157,29 @@ export default class Agenda extends Component {
   }
 
   removeEvent(items, item) {
-    console.log("item: ", item); // TODO: dar delete no banco
-
-    this.setState({ items: items });
+    api
+      .post("delete", {
+        user: this.props?.user?.email,
+        kind: "Agendamentos",
+        id: item._id,
+      })
+      .then((res) => {
+        this.refreshAppointments();
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
   }
 
   addNewEvent(items, item) {
     delete item._id;
-    item.patientId = this.props.selectedPatientId;
-    api.post("upcreate", { user: this.props?.user?.email, kind: "Agendamentos", params: item,})
+    item.patientId = this.state.selectedPatientId;
+    api
+      .post("upcreate", {
+        user: this.props?.user?.email,
+        kind: "Agendamentos",
+        params: item,
+      })
       .then((resp) => {
         this.refreshAppointments();
       })
@@ -169,10 +190,21 @@ export default class Agenda extends Component {
   }
 
   editEvent(items, item) {
-    console.log("item: ", item); 
-    //TODO: Adicionar paciente
-
-    this.setState({ showModal: false, selected: [], items: items });
+    item.id = item._id;
+    delete item._id;
+    item.patientId = this.state.selectedPatientId;
+    api
+      .post("upcreate", {
+        user: this.props?.user?.email,
+        kind: "Agendamentos",
+        params: item,
+      })
+      .then((resp) => {
+        this.refreshAppointments();
+      })
+      .catch((err) => {
+        alert("DEU ZIKA BOY");
+      });
     this._closeModal();
   }
 
