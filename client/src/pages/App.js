@@ -1,6 +1,5 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
-import api from '../api/api'
 import config from '../config.json'
 import Agenda from "../components/Agenda";
 
@@ -20,7 +19,6 @@ function App() {
   const [user, setUser] = useState()
 
   useEffect(() => {
-
     onAuthStateChanged(auth, user => {
 
       if (user != null) {

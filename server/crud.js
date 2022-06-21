@@ -17,7 +17,6 @@ const firebaseApp = initializeApp({
 const db = getFirestore(firebaseApp);
 
 function post(user, kind, data) {
-    console.log("teste entrou no post", user, kind, data)
     const _post = collection(db, `psicodevlicos/${user}/${kind}`)
     return addDoc(_post, data).then(resp => {
         return { ...data, id: resp.id }
@@ -25,7 +24,6 @@ function post(user, kind, data) {
 }
 
 function update(user, kind, id, data){
-    console.log("teste entrou no update",  user, kind, data)
     const _post = doc(db, `psicodevlicos`, user, kind, id)
     return setDoc(_post, data)
 }
@@ -115,7 +113,7 @@ const crud = {
         * @param   {Object} id      id do documento a ser deletado
         * @returns {Array}
    */
-    delete: (user, kind, id) => { // FIXME: it's not working
+    delete: (user, kind, id) => {
         const _delete = doc(db, `psicodevlicos`, user, kind, id)
         return deleteDoc(_delete).then(resp => {
             return { ...resp }

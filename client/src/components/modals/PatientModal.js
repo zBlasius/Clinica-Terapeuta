@@ -33,6 +33,7 @@ function PatientModal({ show, onRequestClose, patients, refreshPatients , user})
           }}
         >
           <PatientTable
+            user={user}
             patients={patients}
             editPatient={(patientToEdit) => {
               setPatientToEdit(patientToEdit);

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@react-md/button";
 import { FontIcon } from "@react-md/icon";
+import api from '../api/api';
 import {
   TableContainer,
   Table,
@@ -10,10 +11,15 @@ import {
   TableRow,
 } from "@react-md/table";
 
-function PatientTable({ patients, refreshPatients, editPatient }) {
+function PatientTable({ patients, refreshPatients, editPatient, user }) {
   function deletePatient(patientId) {
-    // TODO: Deletar paciente por id
-    refreshPatients();
+    api.post("delete", { user: user?.email, kind: "Patient", id: patientId})
+      .then((res) => {
+        refreshPatients();
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
   }
 
   return (
