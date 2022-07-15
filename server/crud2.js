@@ -1,4 +1,12 @@
-function getById(entity, filter){
+
+/**
+    * Função destinada a pegar dados de uma coleção a partir do ID
+    * 
+    * @param   {String} entity    Nome da entitade a ser pesquisada
+    * @param   {Object} filter    ???
+    * @returns {Array} Entidades filtradas do banco de dados
+*/
+function getById(entity, filter){ // filtro do bando
     const citiesCol = collection(db, entity);
     return getDocs(citiesCol).then(resp => {
         const returnList = resp.docs.map(doc => doc.data());
@@ -6,6 +14,13 @@ function getById(entity, filter){
     });
 }
 
+/**
+    * Função destinada a pegar dados de uma coleção a partir do ID
+    * 
+    * @param   {String} entity    Nome da entitade a ser pesquisada
+    * @param   {Object} filter    ???
+    * @returns {Array} Entidades filtradas do banco de dados
+*/
 function getAll(user, kind){
     const postCol = collection(db, `psicodevlicos/${user}/${kind}`);
     return getDocs(postCol).then(resp => {
