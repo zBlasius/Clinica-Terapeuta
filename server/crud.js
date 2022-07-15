@@ -2,9 +2,10 @@ import 'firebase/firestore';
 
 import { getFirestore, collection, setDoc, deleteDoc, getDocs, doc, addDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
+import crud2 from './crud2';
 
 
-const firebaseApp = initializeApp({
+const firebaseApp = initializeApp({ // TODO 2 -> passar isso para uma variável de ambiente
     apiKey: "AIzaSyC7QyTu5CxHDDNS0zkILZNJIytF4LfFD8Y",
     authDomain: "psicodevelicos.firebaseapp.com",
     projectId: "psicodevelicos",
@@ -16,7 +17,7 @@ const firebaseApp = initializeApp({
 
 const db = getFirestore(firebaseApp);
 
-function post(user, kind, data) {
+function post(user, kind, data) { // TODO 1 -> Refatorar as funções de crud aqui presentes
     console.log("teste entrou no post", user, kind, data)
     const _post = collection(db, `psicodevlicos/${user}/${kind}`)
     return addDoc(_post, data).then(resp => {
