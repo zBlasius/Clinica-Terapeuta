@@ -1,11 +1,4 @@
-import 'firebase/firestore';
-
-import { getFirestore, collection, setDoc, deleteDoc, getDocs, doc, addDoc } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
-import crud2 from './crud2';
-
-
-const firebaseApp = initializeApp({ // TODO 2 -> passar isso para uma variável de ambiente
+const firebaseApp = initializeApp({ // TODO -> passar isso para uma variável de ambiente
     apiKey: "AIzaSyC7QyTu5CxHDDNS0zkILZNJIytF4LfFD8Y",
     authDomain: "psicodevelicos.firebaseapp.com",
     projectId: "psicodevelicos",
@@ -17,117 +10,96 @@ const firebaseApp = initializeApp({ // TODO 2 -> passar isso para uma variável 
 
 const db = getFirestore(firebaseApp);
 
-function post(user, kind, data) { // TODO 1 -> Refatorar as funções de crud aqui presentes
-    console.log("teste entrou no post", user, kind, data)
+/**
+    * Função destinada a pegar dados de uma coleção a partir do ID
+    * 
+    * @param   {String} entity    Nome da entitade a ser pesquisada
+    * @returns {Array} Entidades filtradas do banco de dados
+*/
+function getById(entity){ // filtro do bando
+    const citiesCol = collection(db, entity);
+    return getDocs(citiesCol).then(resp => {
+        const returnList = resp.docs.map(doc => doc.data());
+        return returnList;
+    });
+}
+
+/**
+    * Função destinada a pegar dados de uma coleção a partir do ID
+    * 
+    * @param   {String} user    Usuário a ser pesquisado no firestore
+    * @param   {Object} kind    Nome do Kind para fazer a listagem
+    * @returns {Array} Entidades Presentes no Kind informado
+*/
+function getAll(user, kind){
+    const postCol = collection(db, `psicodevlicos/${user}/${kind}`);
+    return getDocs(postCol).then(resp => {
+        const returnList = resp.docs.map(doc => { return { id: doc.id, ...doc.data() } });
+        return returnList;
+    });
+}
+
+/**
+    * Função destinada a atualizar informações no banco de dados
+    * 
+    * @param   {String} user    Usuário a ser pesquisado no firestore
+    * @param   {Object} kind    Nome do Kind para fazer a listagem
+    * @returns {Array} Entidades salvas no banco de dados
+*/
+function upcreate(data){
+    const {user, kind, params} = data;
+
+    if (params.id) {
+        return update(user, kind, params.id, params);
+    }
+    return post(user, kind, params);
+}
+
+/**
+    * Função destinada a remover informações no banco de dados
+    * 
+    * @param   {String} user    Usuário a ser pesquisado no firestore
+    * @param   {Object} kind    Nome do Kind que terá o item removido
+    * @param   {String} id    Nome do id que terá
+    * @returns {Boolean} Booleano:   True == Sucesso, False == Erro
+*/
+function remove(user, kind, id){
+    const removeItem = doc(db, `psicodevlicos`, user, kind, id)
+    return removeDoc(removeItem).then(resp => {
+        return { ...resp }
+    });
+}
+
+/**
+    * Função destinada a enviar informações ao banco de dados
+    * 
+    * @param   {String} user    Usuário a ser pesquisado no firestore
+    * @param   {Object} kind    Nome do Kind em que a informação será inserida|
+    * @param   {Object} data    Dados para serem inseridos
+    * @returns {Array} Dados salvos no banco de dados
+*/
+function post(user, kind, data) {
     const _post = collection(db, `psicodevlicos/${user}/${kind}`)
     return addDoc(_post, data).then(resp => {
         return { ...data, id: resp.id }
     })
 }
 
+/**
+    * Função destinada a atualizar informações no banco de dados
+    * 
+    * @param   {String} user    Usuário a ser pesquisado no firestore
+    * @param   {Object} kind    Nome do Kind para fazer a listagem
+    * @returns {Array} Entidades filtradas do banco de dados
+*/
 function update(user, kind, id, data){
-    console.log("teste entrou no update",  user, kind, data)
     const _post = doc(db, `psicodevlicos`, user, kind, id)
     return setDoc(_post, data)
 }
 
-
-const crud = {
-
-    /**
-        * Função destinada a pegar dados de uma coleção a partir do ID
-        * 
-         * @param   {Any} Any    Any
-         * @param   {Any} Any    Any
-         * @param   {Any} Any    Any
-         * @returns {Any}
-    */
-    getById: (entity, filter) => {
-        const citiesCol = collection(db, entity);
-        return getDocs(citiesCol).then(resp => {
-            const returnList = resp.docs.map(doc => doc.data());
-            return returnList;
-        });
-    },
-
-
-    /**
-         * Função destinada a pegar todos os dados de uma coleção
-         * 
-         * @param   {String} user    Usuário em que será feito o get
-         * @param   {String} kind    Coleção requisitada
-         * @returns {Array} É retornado um array de objetos
-    */
-    getAll: (user, kind) => {
-        const postCol = collection(db, `psicodevlicos/${user}/${kind}`);
-        return getDocs(postCol).then(resp => {
-            const returnList = resp.docs.map(doc => { return { id: doc.id, ...doc.data() } });
-            return returnList;
-        });
-    },
-
-    /**
-         * Função destinada a enviar dados ao firebase
-         * 
-         * @param   {String} user    Usuário a ser requeridos os dados 
-         * @param   {String} kind    Coleção a ser pesquisada
-         * @param   {Object} data    Dados que serão inseridos
-         * @returns {Array}
-    */
-    upcreate: (data) => {
-        const {user, kind, params} = data;
-
-        if (params.id) {
-            return update(user, kind, params.id, params);
-        }
-
-        return post(user, kind, params);
-    },
-
-
-    /**
-         * Função destinada a enviar dados ao firebase
-         * 
-         * @param   {String} user    Usuário a ser requeridos os dados 
-         * @param   {String} kind    Coleção a ser pesquisada
-         * @param   {Object} data    Dados que serão inseridos
-         * @returns {Array}
-    */
-    post,
-
-
-    /**
-         * Função destinada a atualizar dados ao firebase
-         * 
-         * @param   {String} user    Usuário a ser requeridos os dados 
-         * @param   {String} kind    Coleção a ser pesquisada
-         * @param   {Object} id      id do documento a ser atualizado
-         * @param   {Object} data    Dados que serão atualizados
-         * @returns {Array}
-    */
-    update,
-
-
-    /**
-        * Função destinada a deletar dados do firebase
-        * 
-        * @param   {String} user    Usuário a ser requeridos os dados 
-        * @param   {String} kind    Coleção a ser pesquisada
-        * @param   {Object} id      id do documento a ser deletado
-        * @returns {Array}
-   */
-    delete: (user, kind, id) => { // FIXME: it's not working
-        const _delete = doc(db, `psicodevlicos`, user, kind, id)
-        return deleteDoc(_delete).then(resp => {
-            return { ...resp }
-        });
-    }
+export default {
+    getById,
+    getAll,
+    upcreate,
+    remove
 }
-
-//TODO LIST:
-// 1 - função de delete - ok
-// 2 - listagem de pacientes - ok
-// 3 - middleware user - loading
-// 4 - Juntar info de pacientes nos agendamentos - 
-
-export default crud;
