@@ -8,7 +8,7 @@ const firebaseApp = initializeApp({ // TODO -> passar isso para uma variável de
     measurementId: "G-JYSNCPGLKL"
 });
 
-const db = getFirestore(firebaseApp);
+const db = getFirestore(firebaseApp); 
 
 /**
     * Função destinada a pegar dados de uma coleção a partir do ID
